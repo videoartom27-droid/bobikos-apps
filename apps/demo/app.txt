@@ -1,0 +1,62 @@
+REM ---- CATCH: демо-игра на BobikScript ----
+LABEL start
+LET X = 54
+LET S = 0
+GOSUB spawn
+
+LABEL loop
+CLS
+RECT X,58,20,4,2
+CIRC F,Y,2,2
+NUM 100,0,S
+IF BTN(LEFT)==1 GOTO left
+IF BTN(RIGHT)==1 GOTO right
+GOTO clamp
+
+LABEL left
+LET X = X-4
+GOTO clamp
+
+LABEL right
+LET X = X+4
+GOTO clamp
+
+LABEL clamp
+IF X<0 GOTO clampmin
+IF X>108 GOTO clampmax
+GOTO afterinput
+
+LABEL clampmin
+LET X = 0
+GOTO afterinput
+
+LABEL clampmax
+LET X = 108
+GOTO afterinput
+
+LABEL afterinput
+LET Y = Y+3
+IF Y<56 GOTO noCheck
+IF Y>62 GOTO missed
+IF F>=X AND F<=X+20 GOTO caught
+GOTO noCheck
+
+LABEL caught
+LET S = S+1
+BEEP 2000,20
+GOSUB spawn
+GOTO noCheck
+
+LABEL missed
+BEEP 200,150
+GOSUB spawn
+
+LABEL noCheck
+SHOW
+WAIT 40
+GOTO loop
+
+LABEL spawn
+LET F = RND(108)
+LET Y = 0
+RETURN
