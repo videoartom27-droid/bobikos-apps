@@ -5,7 +5,8 @@ LET BY = 25
 LET X = 64
 LET Y = 32
 LET DX = 4
-LET DY = 1
+LET DY = 2
+LET H = 0
 LABEL loop
 CLS
 LINE 64,14,64,17,1
@@ -75,21 +76,23 @@ IF Y<PY-2 GOTO missPlayer
 IF Y>PY+16 GOTO missPlayer
 LET X = 8
 LET DX = 4
-IF Y<PY+4 GOTO hitUp3
-IF Y<PY+7 GOTO hitUp2
-IF Y<PY+11 GOTO hitDown2
-GOTO hitDown3
-LABEL hitUp3
+LET H = H+1
+IF H==1 GOTO leftA
+IF H==2 GOTO leftB
+IF H==3 GOTO leftC
+LET H = 0
+GOTO leftD
+LABEL leftA
 LET DY = -3
 GOTO draw
-LABEL hitUp2
+LABEL leftB
 LET DY = -2
 GOTO draw
-LABEL hitDown2
-LET DY = 2
-GOTO draw
-LABEL hitDown3
+LABEL leftC
 LET DY = 3
+GOTO draw
+LABEL leftD
+LET DY = 2
 GOTO draw
 LABEL right
 IF X<120 GOTO draw
@@ -97,33 +100,36 @@ IF Y<BY-2 GOTO missBot
 IF Y>BY+16 GOTO missBot
 LET X = 118
 LET DX = -4
-IF Y<BY+4 GOTO hitUp3R
-IF Y<BY+7 GOTO hitUp2R
-IF Y<BY+11 GOTO hitDown2R
-GOTO hitDown3R
-LABEL hitUp3R
-LET DY = -3
-GOTO draw
-LABEL hitUp2R
-LET DY = -2
-GOTO draw
-LABEL hitDown2R
-LET DY = 2
-GOTO draw
-LABEL hitDown3R
+LET H = H+1
+IF H==1 GOTO rightA
+IF H==2 GOTO rightB
+IF H==3 GOTO rightC
+LET H = 0
+GOTO rightD
+LABEL rightA
 LET DY = 3
 GOTO draw
+LABEL rightB
+LET DY = 2
+GOTO draw
+LABEL rightC
+LET DY = -3
+GOTO draw
+LABEL rightD
+LET DY = -2
 LABEL missPlayer
 LET X = 64
 LET Y = 32
 LET DX = 4
-LET DY = 1
+LET DY = 2
+LET H = 0
 GOTO draw
 LABEL missBot
 LET X = 64
 LET Y = 32
 LET DX = -4
-LET DY = -1
+LET DY = -2
+LET H = 0
 LABEL draw
 SHOW
 WAIT 5
