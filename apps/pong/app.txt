@@ -14,10 +14,10 @@ IF BTN(UP)==1 GOTO pup
 IF BTN(DOWN)==1 GOTO pdown
 GOTO pclamp
 LABEL pup
-LET A = A-3
+LET A = A-5
 GOTO pclamp
 LABEL pdown
-LET A = A+3
+LET A = A+5
 GOTO pclamp
 LABEL pclamp
 IF A<0 GOTO pmin
@@ -36,10 +36,10 @@ IF D<B+6 GOTO aup
 IF D>B+6 GOTO adown
 GOTO aclamp
 LABEL aup
-LET B = B-2
+LET B = B-4
 GOTO aclamp
 LABEL adown
-LET B = B+2
+LET B = B+4
 GOTO aclamp
 LABEL aclamp
 IF B<0 GOTO bmin
@@ -61,27 +61,27 @@ IF D<=0 GOTO topbounce
 IF D>=62 GOTO botbounce
 GOTO afterwall
 LABEL topbounce
-LET F = 1
+LET F = 2
 LET D = 0
 GOTO afterwall
 LABEL botbounce
-LET F = -1
+LET F = -2
 LET D = 62
 GOTO afterwall
 LABEL afterwall
 
 REM --- отскок от ракеток ---
-IF C<=6 AND D>=A AND D<=A+12 AND E==-1 GOTO hitp
+IF C<=6 AND D>=A AND D<=A+12 AND E<0 GOTO hitp
 GOTO checka
 LABEL hitp
-LET E = 1
+LET E = 2
 BEEP 1800,15
 GOTO afterhit
 LABEL checka
-IF C>=120 AND D>=B AND D<=B+12 AND E==1 GOTO hita
+IF C>=120 AND D>=B AND D<=B+12 AND E>0 GOTO hita
 GOTO afterhit
 LABEL hita
-LET E = -1
+LET E = -2
 BEEP 1800,15
 LABEL afterhit
 
@@ -107,12 +107,12 @@ LINE 64,0,64,63,1
 NUM 40,0,S
 NUM 80,0,T
 SHOW
-WAIT 30
+WAIT 15
 GOTO loop
 
 LABEL resetball
 LET C = 64
 LET D = 32
-LET E = 1
-LET F = 1
+LET E = 2
+LET F = 2
 RETURN
