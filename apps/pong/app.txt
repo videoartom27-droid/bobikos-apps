@@ -1,125 +1,166 @@
 REM ---- PONG ----
 
 LABEL start
-LET PX = 50
-LET BX = 50
+LET PY = 27
+LET BY = 27
 LET X = 64
-LET Y = 32
+LET Y = 34
 LET DX = 2
-LET DY = 2
+LET DY = 1
 LET PS = 0
 LET BS = 0
 
 LABEL loop
 CLS
 
-TXT 20,0,"BOT"
-NUM 40,0,BS
-TXT 75,0,"YOU"
-NUM 100,0,PS
+TXT 38,0,"YOU"
+NUM 64,0,PS
+TXT 78,0,"BOT"
+NUM 104,0,BS
 
-RECT PX,58,28,4,2
-RECT BX,2,28,4,2
+LINE 64,14,64,17,1
+LINE 64,20,64,23,1
+LINE 64,26,64,29,1
+LINE 64,32,64,35,1
+LINE 64,38,64,41,1
+LINE 64,44,64,47,1
+LINE 64,50,64,53,1
+LINE 64,56,64,59,1
+
+RECT 2,PY,3,12,2
+RECT 123,BY,3,12,2
 CIRC X,Y,2,2
 
-IF BTN(LEFT)==1 GOTO left
-IF BTN(RIGHT)==1 GOTO right
+IF BTN(UP)==1 GOTO playerUp
+IF BTN(DOWN)==1 GOTO playerDown
 GOTO inputDone
 
-LABEL left
-LET PX = PX-3
+LABEL playerUp
+LET PY = PY-3
 GOTO inputDone
 
-LABEL right
-LET PX = PX+3
+LABEL playerDown
+LET PY = PY+3
 
 LABEL inputDone
-IF PX<0 GOTO playerMin
-IF PX>100 GOTO playerMax
+IF PY<14 GOTO playerMin
+IF PY>48 GOTO playerMax
 GOTO bot
 
 LABEL playerMin
-LET PX = 0
+LET PY = 14
 GOTO bot
 
 LABEL playerMax
-LET PX = 100
+LET PY = 48
 
 LABEL bot
-IF X<BX+10 GOTO botLeft
-IF X>BX+18 GOTO botRight
+IF Y<BY+4 GOTO botUp
+IF Y>BY+8 GOTO botDown
 GOTO botDone
 
-LABEL botLeft
-LET BX = BX-1
+LABEL botUp
+LET BY = BY-2
 GOTO botDone
 
-LABEL botRight
-LET BX = BX+1
+LABEL botDown
+LET BY = BY+2
 
 LABEL botDone
-IF BX<0 GOTO botMin
-IF BX>100 GOTO botMax
+IF BY<14 GOTO botMin
+IF BY>48 GOTO botMax
 GOTO move
 
 LABEL botMin
-LET BX = 0
+LET BY = 14
 GOTO move
 
 LABEL botMax
-LET BX = 100
+LET BY = 48
 
 LABEL move
 LET X = X+DX
 LET Y = Y+DY
 
-IF X<3 GOTO hitLeft
-IF X>124 GOTO hitRight
-GOTO checkPlayer
+IF Y<16 GOTO topWall
+IF Y>61 GOTO bottomWall
+GOTO collision
 
-LABEL hitLeft
-LET X = 3
+LABEL topWall
+LET Y = 16
+LET DY = 1
+BEEP 500,10
+GOTO collision
+
+LABEL bottomWall
+LET Y = 61
+LET DY = -1
+BEEP 500,10
+
+LABEL collision
+IF DX<0 GOTO leftCheck
+GOTO rightCheck
+
+LABEL leftCheck
+IF X>7 GOTO draw
+IF X<4 GOTO playerMiss
+IF Y<PY GOTO playerMiss
+IF Y>PY+12 GOTO playerMiss
+
+LET X = 7
 LET DX = 2
-GOTO checkPlayer
-
-LABEL hitRight
-LET X = 124
-LET DX = -2
-
-LABEL checkPlayer
-IF Y<55 GOTO checkBot
-IF Y>58 GOTO playerMiss
-IF X<PX GOTO checkBot
-IF X>PX+28 GOTO checkBot
-LET DY = -2
 BEEP 1200,20
+
+IF Y<PY+4 GOTO hitUp
+IF Y>PY+8 GOTO hitDown
+GOTO draw
+
+LABEL hitUp
+LET DY = -2
+GOTO draw
+
+LABEL hitDown
+LET DY = 2
+GOTO draw
+
+LABEL rightCheck
+IF X<120 GOTO draw
+IF X>123 GOTO botMiss
+IF Y<BY GOTO botMiss
+IF Y>BY+12 GOTO botMiss
+
+LET X = 120
+LET DX = -2
+BEEP 1200,20
+
+IF Y<BY+4 GOTO botHitUp
+IF Y>BY+8 GOTO botHitDown
+GOTO draw
+
+LABEL botHitUp
+LET DY = -2
+GOTO draw
+
+LABEL botHitDown
+LET DY = 2
 GOTO draw
 
 LABEL playerMiss
 LET BS = BS+1
 BEEP 200,100
 LET X = 64
-LET Y = 32
-LET DX = -2
-LET DY = -2
-GOTO draw
-
-LABEL checkBot
-IF Y>7 GOTO draw
-IF Y<5 GOTO botMiss
-IF X<BX GOTO botMiss
-IF X>BX+28 GOTO botMiss
-LET DY = 2
-BEEP 1200,20
+LET Y = 34
+LET DX = 2
+LET DY = 1
 GOTO draw
 
 LABEL botMiss
 LET PS = PS+1
 BEEP 2000,100
 LET X = 64
-LET Y = 32
-LET DX = 2
-LET DY = 2
+LET Y = 34
+LET DX = -2
+LET DY = -1
 
 LABEL draw
 SHOW
