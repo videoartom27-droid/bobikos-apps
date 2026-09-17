@@ -6,7 +6,21 @@ LET X = 64
 LET Y = 32
 LET DX = 4
 LET DY = 2
-LET H = 0
+LET R = RND(3)
+IF R==0 GOTO serve1
+IF R==1 GOTO serve2
+IF R==2 GOTO serve3
+LET DY = 3
+GOTO game
+LABEL serve1
+LET DY = -3
+GOTO game
+LABEL serve2
+LET DY = -2
+GOTO game
+LABEL serve3
+LET DY = 2
+LABEL game
 LABEL loop
 CLS
 LINE 64,14,64,17,1
@@ -76,22 +90,26 @@ IF Y<PY-2 GOTO missPlayer
 IF Y>PY+16 GOTO missPlayer
 LET X = 8
 LET DX = 4
-LET H = H+1
-IF H==1 GOTO leftA
-IF H==2 GOTO leftB
-IF H==3 GOTO leftC
-LET H = 0
-GOTO leftD
-LABEL leftA
-LET DY = -3
-GOTO draw
-LABEL leftB
-LET DY = -2
-GOTO draw
-LABEL leftC
+IF Y<PY+3 GOTO leftHit1
+IF Y<PY+6 GOTO leftHit2
+IF Y<PY+10 GOTO leftCenter
+IF Y<PY+13 GOTO leftHit4
 LET DY = 3
 GOTO draw
-LABEL leftD
+LABEL leftHit1
+LET DY = -3
+GOTO draw
+LABEL leftHit2
+LET DY = -2
+GOTO draw
+LABEL leftCenter
+IF DY<0 GOTO leftCenterDown
+LET DY = -1
+GOTO draw
+LABEL leftCenterDown
+LET DY = 1
+GOTO draw
+LABEL leftHit4
 LET DY = 2
 GOTO draw
 LABEL right
@@ -100,36 +118,65 @@ IF Y<BY-2 GOTO missBot
 IF Y>BY+16 GOTO missBot
 LET X = 118
 LET DX = -4
-LET H = H+1
-IF H==1 GOTO rightA
-IF H==2 GOTO rightB
-IF H==3 GOTO rightC
-LET H = 0
-GOTO rightD
-LABEL rightA
+IF Y<BY+3 GOTO rightHit1
+IF Y<BY+6 GOTO rightHit2
+IF Y<BY+10 GOTO rightCenter
+IF Y<BY+13 GOTO rightHit4
 LET DY = 3
 GOTO draw
-LABEL rightB
-LET DY = 2
-GOTO draw
-LABEL rightC
+LABEL rightHit1
 LET DY = -3
 GOTO draw
-LABEL rightD
+LABEL rightHit2
 LET DY = -2
+GOTO draw
+LABEL rightCenter
+IF DY<0 GOTO rightCenterDown
+LET DY = -1
+GOTO draw
+LABEL rightCenterDown
+LET DY = 1
+GOTO draw
+LABEL rightHit4
+LET DY = 2
+GOTO draw
 LABEL missPlayer
 LET X = 64
 LET Y = 32
 LET DX = 4
+LET R = RND(3)
+IF R==0 GOTO reset1
+IF R==1 GOTO reset2
+IF R==2 GOTO reset3
+LET DY = 3
+GOTO draw
+LABEL reset1
+LET DY = -3
+GOTO draw
+LABEL reset2
+LET DY = -2
+GOTO draw
+LABEL reset3
 LET DY = 2
-LET H = 0
 GOTO draw
 LABEL missBot
 LET X = 64
 LET Y = 32
 LET DX = -4
+LET R = RND(3)
+IF R==0 GOTO reset4
+IF R==1 GOTO reset5
+IF R==2 GOTO reset6
+LET DY = 3
+GOTO draw
+LABEL reset4
+LET DY = -3
+GOTO draw
+LABEL reset5
 LET DY = -2
-LET H = 0
+GOTO draw
+LABEL reset6
+LET DY = 2
 LABEL draw
 SHOW
 WAIT 5
