@@ -1,190 +1,118 @@
-REM ---- PONG ----
+REM ---- PONG: игрок (слева, UP/DOWN) против простого AI (справа) ----
 LABEL start
-LET PY = 25
-LET BY = 25
-LET X = 64
-LET Y = 32
-LET DX = 4
-LET DY = 2
+LET A = 26
+LET B = 26
 LET S = 0
+LET T = 0
+GOSUB resetball
 
 LABEL loop
 CLS
 
-LINE 64,14,64,17,1
-LINE 64,20,64,23,1
-LINE 64,26,64,29,1
-LINE 64,32,64,35,1
-LINE 64,38,64,41,1
-LINE 64,44,64,47,1
-LINE 64,50,64,53,1
+REM --- движение ракетки игрока ---
+IF BTN(UP)==1 GOTO pup
+IF BTN(DOWN)==1 GOTO pdown
+GOTO pclamp
+LABEL pup
+LET A = A-3
+GOTO pclamp
+LABEL pdown
+LET A = A+3
+GOTO pclamp
+LABEL pclamp
+IF A<0 GOTO pmin
+IF A>52 GOTO pmax
+GOTO afterp
+LABEL pmin
+LET A = 0
+GOTO afterp
+LABEL pmax
+LET A = 52
+GOTO afterp
+LABEL afterp
 
-RECT 2,PY,4,14,2
-RECT 122,BY,4,14,2
-CIRC X,Y,2,2
+REM --- простой AI для правой ракетки ---
+IF D<B+6 GOTO aup
+IF D>B+6 GOTO adown
+GOTO aclamp
+LABEL aup
+LET B = B-2
+GOTO aclamp
+LABEL adown
+LET B = B+2
+GOTO aclamp
+LABEL aclamp
+IF B<0 GOTO bmin
+IF B>52 GOTO bmax
+GOTO aftera
+LABEL bmin
+LET B = 0
+GOTO aftera
+LABEL bmax
+LET B = 52
+GOTO aftera
+LABEL aftera
 
-IF BTN(UP)==1 GOTO playerUp
-IF BTN(DOWN)==1 GOTO playerDown
-GOTO bot
+REM --- движение мяча ---
+LET C = C+E
+LET D = D+F
 
-LABEL playerUp
-LET PY = PY-4
-IF PY<14 GOTO playerMin
-GOTO bot
+IF D<=0 GOTO topbounce
+IF D>=62 GOTO botbounce
+GOTO afterwall
+LABEL topbounce
+LET F = 1
+LET D = 0
+GOTO afterwall
+LABEL botbounce
+LET F = -1
+LET D = 62
+GOTO afterwall
+LABEL afterwall
 
-LABEL playerMin
-LET PY = 14
-GOTO bot
+REM --- отскок от ракеток ---
+IF C<=6 AND D>=A AND D<=A+12 AND E==-1 GOTO hitp
+GOTO checka
+LABEL hitp
+LET E = 1
+BEEP 1800,15
+GOTO afterhit
+LABEL checka
+IF C>=120 AND D>=B AND D<=B+12 AND E==1 GOTO hita
+GOTO afterhit
+LABEL hita
+LET E = -1
+BEEP 1800,15
+LABEL afterhit
 
-LABEL playerDown
-LET PY = PY+4
-IF PY>46 GOTO playerMax
-GOTO bot
-
-LABEL playerMax
-LET PY = 46
-
-LABEL bot
-IF DX<0 GOTO move
-IF Y<BY+5 GOTO botUp
-IF Y>BY+9 GOTO botDown
-GOTO move
-
-LABEL botUp
-LET BY = BY-2
-IF BY<14 GOTO botMin
-GOTO move
-
-LABEL botMin
-LET BY = 14
-GOTO move
-
-LABEL botDown
-LET BY = BY+2
-IF BY>46 GOTO botMax
-GOTO move
-
-LABEL botMax
-LET BY = 46
-
-LABEL move
-LET X = X+DX
-LET Y = Y+DY
-
-IF Y<=16 GOTO topWall
-IF Y>=61 GOTO bottomWall
-GOTO paddleCheck
-
-LABEL topWall
-LET Y = 16
-LET DY = 0-DY
-GOTO paddleCheck
-
-LABEL bottomWall
-LET Y = 61
-LET DY = 0-DY
-
-LABEL paddleCheck
-IF DX<0 GOTO leftCheck
-GOTO rightCheck
-
-LABEL leftCheck
-IF X>7 GOTO draw
-IF Y<PY-2 GOTO resetPlayer
-IF Y>PY+16 GOTO resetPlayer
-
-LET X = 8
-LET DX = 4
-LET O = Y-PY
-LET S = 1-S
-
-IF O<3 GOTO leftHardUp
-IF O<6 GOTO leftUp
-IF O<9 GOTO leftCenter
-IF O<12 GOTO leftDown
-GOTO leftHardDown
-
-LABEL leftHardUp
-LET DY = -3
+REM --- голы ---
+IF C<0 GOTO aiscore
+IF C>127 GOTO pscore
 GOTO draw
-
-LABEL leftUp
-LET DY = -2
+LABEL aiscore
+LET T = T+1
+BEEP 200,150
+GOSUB resetball
 GOTO draw
-
-LABEL leftCenter
-IF S==0 GOTO leftCenterUp
-LET DY = 1
-GOTO draw
-
-LABEL leftCenterUp
-LET DY = -1
-GOTO draw
-
-LABEL leftDown
-LET DY = 2
-GOTO draw
-
-LABEL leftHardDown
-LET DY = 3
-GOTO draw
-
-LABEL rightCheck
-IF X<120 GOTO draw
-IF Y<BY-2 GOTO resetBot
-IF Y>BY+16 GOTO resetBot
-
-LET X = 118
-LET DX = -4
-LET O = Y-BY
-LET S = 1-S
-
-IF O<3 GOTO rightHardUp
-IF O<6 GOTO rightUp
-IF O<9 GOTO rightCenter
-IF O<12 GOTO rightDown
-GOTO rightHardDown
-
-LABEL rightHardUp
-LET DY = -3
-GOTO draw
-
-LABEL rightUp
-LET DY = -2
-GOTO draw
-
-LABEL rightCenter
-IF S==0 GOTO rightCenterUp
-LET DY = 1
-GOTO draw
-
-LABEL rightCenterUp
-LET DY = -1
-GOTO draw
-
-LABEL rightDown
-LET DY = 2
-GOTO draw
-
-LABEL rightHardDown
-LET DY = 3
-GOTO draw
-
-LABEL resetPlayer
-LET X = 64
-LET Y = 32
-LET DX = 4
-LET DY = 2
-GOTO draw
-
-LABEL resetBot
-LET X = 64
-LET Y = 32
-LET DX = -4
-LET DY = -2
-GOTO draw
+LABEL pscore
+LET S = S+1
+BEEP 2500,80
+GOSUB resetball
 
 LABEL draw
+RECT 4,A,2,12,2
+RECT 122,B,2,12,2
+CIRC C,D,2,2
+LINE 64,0,64,63,1
+NUM 40,0,S
+NUM 80,0,T
 SHOW
-WAIT 5
+WAIT 30
 GOTO loop
+
+LABEL resetball
+LET C = 64
+LET D = 32
+LET E = 1
+LET F = 1
+RETURN
