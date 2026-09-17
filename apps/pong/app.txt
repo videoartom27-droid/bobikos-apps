@@ -1,34 +1,34 @@
 REM ---- PONG ----
 
 LABEL start
-LET PY = 27
-LET BY = 27
+LET PY = 32
+LET BY = 32
 LET X = 64
-LET Y = 34
-LET DX = 2
+LET Y = 32
+LET DX = 3
 LET DY = 1
 LET PS = 0
 LET BS = 0
+LET SPEED = 3
 
 LABEL loop
 CLS
 
-TXT 38,0,"YOU"
+TXT 42,0,"YOU"
 NUM 64,0,PS
-TXT 78,0,"BOT"
+TXT 80,0,"BOT"
 NUM 104,0,BS
 
-LINE 64,14,64,17,1
-LINE 64,20,64,23,1
-LINE 64,26,64,29,1
-LINE 64,32,64,35,1
-LINE 64,38,64,41,1
-LINE 64,44,64,47,1
-LINE 64,50,64,53,1
-LINE 64,56,64,59,1
+LINE 64,13,64,17,1
+LINE 64,20,64,24,1
+LINE 64,27,64,31,1
+LINE 64,34,64,38,1
+LINE 64,41,64,45,1
+LINE 64,48,64,52,1
+LINE 64,55,64,59,1
 
-RECT 2,PY,3,12,2
-RECT 123,BY,3,12,2
+RECT 2,PY,4,14,2
+RECT 122,BY,4,14,2
 CIRC X,Y,2,2
 
 IF BTN(UP)==1 GOTO playerUp
@@ -44,7 +44,7 @@ LET PY = PY+3
 
 LABEL inputDone
 IF PY<14 GOTO playerMin
-IF PY>48 GOTO playerMax
+IF PY>46 GOTO playerMax
 GOTO bot
 
 LABEL playerMin
@@ -52,23 +52,37 @@ LET PY = 14
 GOTO bot
 
 LABEL playerMax
-LET PY = 48
+LET PY = 46
 
 LABEL bot
-IF Y<BY+4 GOTO botUp
-IF Y>BY+8 GOTO botDown
+IF X<70 GOTO botWait
+IF Y<BY+3 GOTO botUp
+IF Y>BY+11 GOTO botDown
 GOTO botDone
 
 LABEL botUp
-LET BY = BY-2
+LET BY = BY-3
 GOTO botDone
 
 LABEL botDown
-LET BY = BY+2
+LET BY = BY+3
+GOTO botDone
+
+LABEL botWait
+IF BY<32 GOTO botCenterUp
+IF BY>32 GOTO botCenterDown
+GOTO botDone
+
+LABEL botCenterUp
+LET BY = BY+1
+GOTO botDone
+
+LABEL botCenterDown
+LET BY = BY-1
 
 LABEL botDone
 IF BY<14 GOTO botMin
-IF BY>48 GOTO botMax
+IF BY>46 GOTO botMax
 GOTO move
 
 LABEL botMin
@@ -76,93 +90,135 @@ LET BY = 14
 GOTO move
 
 LABEL botMax
-LET BY = 48
+LET BY = 46
 
 LABEL move
 LET X = X+DX
 LET Y = Y+DY
 
-IF Y<16 GOTO topWall
+IF Y<15 GOTO topWall
 IF Y>61 GOTO bottomWall
 GOTO collision
 
 LABEL topWall
-LET Y = 16
-LET DY = 1
-BEEP 500,10
+LET Y = 15
+LET DY = 0-DY
 GOTO collision
 
 LABEL bottomWall
 LET Y = 61
-LET DY = -1
-BEEP 500,10
+LET DY = 0-DY
 
 LABEL collision
-IF DX<0 GOTO leftCheck
-GOTO rightCheck
+IF DX<0 GOTO leftCollision
+GOTO rightCollision
 
-LABEL leftCheck
-IF X>7 GOTO draw
+LABEL leftCollision
+IF X>8 GOTO draw
 IF X<4 GOTO playerMiss
 IF Y<PY GOTO playerMiss
-IF Y>PY+12 GOTO playerMiss
+IF Y>PY+14 GOTO playerMiss
 
-LET X = 7
-LET DX = 2
-BEEP 1200,20
+LET X = 8
+LET DX = SPEED
 
-IF Y<PY+4 GOTO hitUp
-IF Y>PY+8 GOTO hitDown
-GOTO draw
+IF Y<PY+3 GOTO playerHardUp
+IF Y<PY+6 GOTO playerUpHit
+IF Y<PY+10 GOTO playerCenterHit
+IF Y<PY+13 GOTO playerDownHit
+GOTO playerHardDown
 
-LABEL hitUp
+LABEL playerHardUp
+LET DY = -3
+GOTO hit
+
+LABEL playerUpHit
 LET DY = -2
-GOTO draw
+GOTO hit
 
-LABEL hitDown
+LABEL playerCenterHit
+LET DY = 0
+GOTO hit
+
+LABEL playerDownHit
 LET DY = 2
+GOTO hit
+
+LABEL playerHardDown
+LET DY = 3
+
+LABEL hit
+LET SPEED = SPEED+1
+IF SPEED>5 GOTO speedMax
 GOTO draw
 
-LABEL rightCheck
-IF X<120 GOTO draw
-IF X>123 GOTO botMiss
+LABEL speedMax
+LET SPEED = 5
+GOTO draw
+
+LABEL rightCollision
+IF X<118 GOTO draw
+IF X>122 GOTO botMiss
 IF Y<BY GOTO botMiss
-IF Y>BY+12 GOTO botMiss
+IF Y>BY+14 GOTO botMiss
 
-LET X = 120
-LET DX = -2
-BEEP 1200,20
+LET X = 118
+LET DX = 0-SPEED
 
-IF Y<BY+4 GOTO botHitUp
-IF Y>BY+8 GOTO botHitDown
-GOTO draw
+IF Y<BY+3 GOTO botHardUp
+IF Y<BY+6 GOTO botUpHit
+IF Y<BY+10 GOTO botCenterHit
+IF Y<BY+13 GOTO botDownHit
+GOTO botHardDown
 
-LABEL botHitUp
+LABEL botHardUp
+LET DY = -3
+GOTO hitBot
+
+LABEL botUpHit
 LET DY = -2
+GOTO hitBot
+
+LABEL botCenterHit
+LET DY = 0
+GOTO hitBot
+
+LABEL botDownHit
+LET DY = 2
+GOTO hitBot
+
+LABEL botHardDown
+LET DY = 3
+
+LABEL hitBot
+LET SPEED = SPEED+1
+IF SPEED>5 GOTO speedMaxBot
 GOTO draw
 
-LABEL botHitDown
-LET DY = 2
+LABEL speedMaxBot
+LET SPEED = 5
 GOTO draw
 
 LABEL playerMiss
 LET BS = BS+1
-BEEP 200,100
+BEEP 200,80
 LET X = 64
-LET Y = 34
-LET DX = 2
-LET DY = 1
+LET Y = 32
+LET DX = 3
+LET DY = RND(4)-2
+LET SPEED = 3
 GOTO draw
 
 LABEL botMiss
 LET PS = PS+1
-BEEP 2000,100
+BEEP 2000,80
 LET X = 64
-LET Y = 34
-LET DX = -2
-LET DY = -1
+LET Y = 32
+LET DX = -3
+LET DY = RND(4)-2
+LET SPEED = 3
 
 LABEL draw
 SHOW
-WAIT 40
+WAIT 15
 GOTO loop
