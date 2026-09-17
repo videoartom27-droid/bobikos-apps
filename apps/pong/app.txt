@@ -1,5 +1,13 @@
 REM ---- PONG: игрок (слева, UP/DOWN) против простого AI (справа) ----
 LABEL start
+REM ===== НАСТРОЙКИ СКОРОСТИ (крути только эти три строки) =====
+LET G = 5
+REM G = скорость ракетки игрока, px/кадр
+LET H = 5
+REM H = скорость ракетки AI, px/кадр
+LET I = 8
+REM I = скорость мяча, px/кадр (E/F ниже хранят только направление ±1)
+REM ==============================================================
 LET A = 26
 LET B = 26
 LET S = 0
@@ -14,10 +22,10 @@ IF BTN(UP)==1 GOTO pup
 IF BTN(DOWN)==1 GOTO pdown
 GOTO pclamp
 LABEL pup
-LET A = A-5
+LET A = A-G
 GOTO pclamp
 LABEL pdown
-LET A = A+5
+LET A = A+G
 GOTO pclamp
 LABEL pclamp
 IF A<0 GOTO pmin
@@ -36,10 +44,10 @@ IF D<B+6 GOTO aup
 IF D>B+6 GOTO adown
 GOTO aclamp
 LABEL aup
-LET B = B-4
+LET B = B-H
 GOTO aclamp
 LABEL adown
-LET B = B+4
+LET B = B+H
 GOTO aclamp
 LABEL aclamp
 IF B<0 GOTO bmin
@@ -53,19 +61,19 @@ LET B = 52
 GOTO aftera
 LABEL aftera
 
-REM --- движение мяча ---
-LET C = C+E
-LET D = D+F
+REM --- движение мяча (направление E/F умножается на скорость I) ---
+LET C = C+E*I
+LET D = D+F*I
 
 IF D<=0 GOTO topbounce
 IF D>=62 GOTO botbounce
 GOTO afterwall
 LABEL topbounce
-LET F = 2
+LET F = 1
 LET D = 0
 GOTO afterwall
 LABEL botbounce
-LET F = -2
+LET F = -1
 LET D = 62
 GOTO afterwall
 LABEL afterwall
@@ -74,14 +82,14 @@ REM --- отскок от ракеток ---
 IF C<=6 AND D>=A AND D<=A+12 AND E<0 GOTO hitp
 GOTO checka
 LABEL hitp
-LET E = 2
+LET E = 1
 BEEP 1800,15
 GOTO afterhit
 LABEL checka
 IF C>=120 AND D>=B AND D<=B+12 AND E>0 GOTO hita
 GOTO afterhit
 LABEL hita
-LET E = -2
+LET E = -1
 BEEP 1800,15
 LABEL afterhit
 
@@ -113,6 +121,6 @@ GOTO loop
 LABEL resetball
 LET C = 64
 LET D = 32
-LET E = 2
-LET F = 2
+LET E = 1
+LET F = 1
 RETURN
