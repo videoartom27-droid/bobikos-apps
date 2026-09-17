@@ -6,23 +6,11 @@ LET X = 64
 LET Y = 32
 LET DX = 4
 LET DY = 2
-LET R = RND(3)
-IF R==0 GOTO serve1
-IF R==1 GOTO serve2
-IF R==2 GOTO serve3
-LET DY = 3
-GOTO game
-LABEL serve1
-LET DY = -3
-GOTO game
-LABEL serve2
-LET DY = -2
-GOTO game
-LABEL serve3
-LET DY = 2
-LABEL game
+LET S = 0
+
 LABEL loop
 CLS
+
 LINE 64,14,64,17,1
 LINE 64,20,64,23,1
 LINE 64,26,64,29,1
@@ -30,153 +18,172 @@ LINE 64,32,64,35,1
 LINE 64,38,64,41,1
 LINE 64,44,64,47,1
 LINE 64,50,64,53,1
+
 RECT 2,PY,4,14,2
 RECT 122,BY,4,14,2
 CIRC X,Y,2,2
+
 IF BTN(UP)==1 GOTO playerUp
 IF BTN(DOWN)==1 GOTO playerDown
 GOTO bot
+
 LABEL playerUp
 LET PY = PY-4
 IF PY<14 GOTO playerMin
 GOTO bot
+
 LABEL playerMin
 LET PY = 14
 GOTO bot
+
 LABEL playerDown
 LET PY = PY+4
 IF PY>46 GOTO playerMax
 GOTO bot
+
 LABEL playerMax
 LET PY = 46
+
 LABEL bot
 IF DX<0 GOTO move
-IF Y<BY+4 GOTO botUp
-IF Y>BY+10 GOTO botDown
+IF Y<BY+5 GOTO botUp
+IF Y>BY+9 GOTO botDown
 GOTO move
+
 LABEL botUp
 LET BY = BY-2
 IF BY<14 GOTO botMin
 GOTO move
+
 LABEL botMin
 LET BY = 14
 GOTO move
+
 LABEL botDown
 LET BY = BY+2
 IF BY>46 GOTO botMax
 GOTO move
+
 LABEL botMax
 LET BY = 46
-GOTO move
+
 LABEL move
 LET X = X+DX
 LET Y = Y+DY
-IF Y<=16 GOTO top
-IF Y>=61 GOTO bottom
-GOTO collision
-LABEL top
+
+IF Y<=16 GOTO topWall
+IF Y>=61 GOTO bottomWall
+GOTO paddleCheck
+
+LABEL topWall
 LET Y = 16
 LET DY = 0-DY
-GOTO collision
-LABEL bottom
+GOTO paddleCheck
+
+LABEL bottomWall
 LET Y = 61
 LET DY = 0-DY
-LABEL collision
-IF DX<0 GOTO left
-GOTO right
-LABEL left
+
+LABEL paddleCheck
+IF DX<0 GOTO leftCheck
+GOTO rightCheck
+
+LABEL leftCheck
 IF X>7 GOTO draw
-IF Y<PY-2 GOTO missPlayer
-IF Y>PY+16 GOTO missPlayer
+IF Y<PY-2 GOTO resetPlayer
+IF Y>PY+16 GOTO resetPlayer
+
 LET X = 8
 LET DX = 4
-IF Y<PY+3 GOTO leftHit1
-IF Y<PY+6 GOTO leftHit2
-IF Y<PY+10 GOTO leftCenter
-IF Y<PY+13 GOTO leftHit4
-LET DY = 3
-GOTO draw
-LABEL leftHit1
+LET O = Y-PY
+LET S = 1-S
+
+IF O<3 GOTO leftHardUp
+IF O<6 GOTO leftUp
+IF O<9 GOTO leftCenter
+IF O<12 GOTO leftDown
+GOTO leftHardDown
+
+LABEL leftHardUp
 LET DY = -3
 GOTO draw
-LABEL leftHit2
+
+LABEL leftUp
 LET DY = -2
 GOTO draw
+
 LABEL leftCenter
-IF DY<0 GOTO leftCenterDown
-LET DY = -1
-GOTO draw
-LABEL leftCenterDown
+IF S==0 GOTO leftCenterUp
 LET DY = 1
 GOTO draw
-LABEL leftHit4
+
+LABEL leftCenterUp
+LET DY = -1
+GOTO draw
+
+LABEL leftDown
 LET DY = 2
 GOTO draw
-LABEL right
+
+LABEL leftHardDown
+LET DY = 3
+GOTO draw
+
+LABEL rightCheck
 IF X<120 GOTO draw
-IF Y<BY-2 GOTO missBot
-IF Y>BY+16 GOTO missBot
+IF Y<BY-2 GOTO resetBot
+IF Y>BY+16 GOTO resetBot
+
 LET X = 118
 LET DX = -4
-IF Y<BY+3 GOTO rightHit1
-IF Y<BY+6 GOTO rightHit2
-IF Y<BY+10 GOTO rightCenter
-IF Y<BY+13 GOTO rightHit4
-LET DY = 3
-GOTO draw
-LABEL rightHit1
+LET O = Y-BY
+LET S = 1-S
+
+IF O<3 GOTO rightHardUp
+IF O<6 GOTO rightUp
+IF O<9 GOTO rightCenter
+IF O<12 GOTO rightDown
+GOTO rightHardDown
+
+LABEL rightHardUp
 LET DY = -3
 GOTO draw
-LABEL rightHit2
+
+LABEL rightUp
 LET DY = -2
 GOTO draw
+
 LABEL rightCenter
-IF DY<0 GOTO rightCenterDown
-LET DY = -1
-GOTO draw
-LABEL rightCenterDown
+IF S==0 GOTO rightCenterUp
 LET DY = 1
 GOTO draw
-LABEL rightHit4
+
+LABEL rightCenterUp
+LET DY = -1
+GOTO draw
+
+LABEL rightDown
 LET DY = 2
 GOTO draw
-LABEL missPlayer
+
+LABEL rightHardDown
+LET DY = 3
+GOTO draw
+
+LABEL resetPlayer
 LET X = 64
 LET Y = 32
 LET DX = 4
-LET R = RND(3)
-IF R==0 GOTO reset1
-IF R==1 GOTO reset2
-IF R==2 GOTO reset3
-LET DY = 3
-GOTO draw
-LABEL reset1
-LET DY = -3
-GOTO draw
-LABEL reset2
-LET DY = -2
-GOTO draw
-LABEL reset3
 LET DY = 2
 GOTO draw
-LABEL missBot
+
+LABEL resetBot
 LET X = 64
 LET Y = 32
 LET DX = -4
-LET R = RND(3)
-IF R==0 GOTO reset4
-IF R==1 GOTO reset5
-IF R==2 GOTO reset6
-LET DY = 3
-GOTO draw
-LABEL reset4
-LET DY = -3
-GOTO draw
-LABEL reset5
 LET DY = -2
 GOTO draw
-LABEL reset6
-LET DY = 2
+
 LABEL draw
 SHOW
 WAIT 5
