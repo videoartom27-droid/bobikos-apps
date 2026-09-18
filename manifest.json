@@ -1,6 +1,7 @@
 {
   "apps": [
     { "name": "demo", "path": "apps/demo/app.txt" },
-    { "name": "pong", "path": "apps/pong/app.txt" }
+    { "name": "pong", "path": "apps/pong/app.txt" },
+    { "name": "snake", "path": "apps/snake/app.txt" }
   ]
 }
