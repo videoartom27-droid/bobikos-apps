@@ -1,0 +1,125 @@
+REM ---- SNAKE ----
+REM Сетка 32x16 клеток по 4px = весь экран 128x64.
+REM Управление: UP/DOWN/LEFT/RIGHT. Массивы объявляются один раз ДО
+REM LABEL start, чтобы GOTO start (рестарт) их не переобъявлял заново.
+ARR X, 60
+ARR Y, 60
+
+REM ===== НАСТРОЙКА СКОРОСТИ =====
+LET J = 120
+REM J = задержка кадра, мс (меньше = быстрее змейка)
+REM ==============================
+
+LABEL start
+LET X[0] = 10
+LET Y[0] = 8
+LET X[1] = 9
+LET Y[1] = 8
+LET X[2] = 8
+LET Y[2] = 8
+LET N = 3
+LET U = 1
+LET W = 0
+LET P = 1
+LET Q = 0
+GOSUB spawnfood
+
+LABEL loop
+REM --- ввод (разворот на 180 запрещён — менять можно только "свободную" ось) ---
+IF BTN(UP)==1 AND W==0 GOTO setup
+IF BTN(DOWN)==1 AND W==0 GOTO setdown
+IF BTN(LEFT)==1 AND U==0 GOTO setleft
+IF BTN(RIGHT)==1 AND U==0 GOTO setright
+GOTO afterinput
+LABEL setup
+LET P = 0
+LET Q = -1
+GOTO afterinput
+LABEL setdown
+LET P = 0
+LET Q = 1
+GOTO afterinput
+LABEL setleft
+LET P = -1
+LET Q = 0
+GOTO afterinput
+LABEL setright
+LET P = 1
+LET Q = 0
+LABEL afterinput
+LET U = P
+LET W = Q
+
+REM --- сдвиг тела (хвост следует за головой) ---
+LET Z = N-1
+LABEL shiftloop
+IF Z<=0 GOTO shiftdone
+LET X[Z] = X[Z-1]
+LET Y[Z] = Y[Z-1]
+LET Z = Z-1
+GOTO shiftloop
+LABEL shiftdone
+
+LET X[0] = X[0]+U
+LET Y[0] = Y[0]+W
+
+REM --- столкновение со стеной ---
+IF X[0]<0 GOTO gameover
+IF X[0]>31 GOTO gameover
+IF Y[0]<0 GOTO gameover
+IF Y[0]>15 GOTO gameover
+
+REM --- столкновение с собой ---
+LET Z = 1
+LABEL selfloop
+IF Z>=N GOTO selfdone
+IF X[0]==X[Z] GOTO selfcheck2
+GOTO selfnext
+LABEL selfcheck2
+IF Y[0]==Y[Z] GOTO gameover
+LABEL selfnext
+LET Z = Z+1
+GOTO selfloop
+LABEL selfdone
+
+REM --- еда ---
+IF X[0]==F GOTO foodcheck2
+GOTO afterfood
+LABEL foodcheck2
+IF Y[0]==G GOTO eat
+GOTO afterfood
+LABEL eat
+LET N = N+1
+BEEP 2200,20
+GOSUB spawnfood
+LABEL afterfood
+
+REM --- отрисовка ---
+CLS
+RECT F*4,G*4,3,3,1
+LET Z = 0
+LABEL drawloop
+IF Z>=N GOTO drawdone
+RECT X[Z]*4,Y[Z]*4,3,3,2
+LET Z = Z+1
+GOTO drawloop
+LABEL drawdone
+SHOW
+WAIT J
+GOTO loop
+
+LABEL gameover
+CLS
+TXT 28,28,"GAME OVER"
+TXT 20,40,"score:"
+NUM 55,40,N
+SHOW
+LABEL waitrestart
+IF BTN(OK)==1 GOTO start
+WAIT 100
+GOTO waitrestart
+
+LABEL spawnfood
+LET F = RND(31)
+LET G = RND(15)
+RETURN
